@@ -33,7 +33,9 @@ input[type=range]{padding:0;accent-color:var(--pink2)}
 .chk input{width:auto;accent-color:var(--pink2)}
 .row{display:flex;gap:8px}
 .row>*{min-width:0;flex:1}
-.item{display:grid;grid-template-columns:1fr 60px 100px 36px;gap:6px;margin-bottom:6px;align-items:center}
+.item{display:grid;grid-template-columns:1fr 60px 100px 36px;gap:6px;margin-bottom:10px;padding-bottom:10px;border-bottom:1px dashed var(--line);align-items:center}
+.item .m{grid-column:1/-1;background:var(--pinkbg);border-color:var(--pink)}
+.item.head{border:0;padding:0;margin-bottom:4px}
 .item button{padding:8px 0}
 .head{font-size:.8rem;color:var(--mut)}
 button{font:inherit;border:1.5px solid var(--line);background:#fff;color:var(--ink);padding:10px 14px;border-radius:12px;cursor:pointer}
@@ -114,11 +116,16 @@ See you next PO</textarea>
 var $=function(id){return document.getElementById(id);};
 var itemsEl=$('items'),cv=$('cv'),ctx=cv.getContext('2d'),logoImg=null;
 function num(n){return Math.round(n).toLocaleString('id-ID');}
+var MENU=[['Brownies',[['Fudgy Brownies (300g)',95000],['Fudgy Brownies (20x20)',200000]]],['Cookies',[['Classic Chocolate Chip Cookie',20000]]],['Salt Bread',[['Double Choco Salt Bread',22000],['Choco Cheese Salt Bread',25000],['Garlic Cheese Salt Bread',28000],['Honey Pepperoni Cheese Salt Bread',26000]]]];
+var MF=[],MH='<option value="">Pick from menu… (or type below)</option>';
+MENU.forEach(function(g){MH+='<optgroup label="'+g[0]+'">';g[1].forEach(function(it){MH+='<option value="'+MF.length+'">'+it[0]+' — '+(it[1]/1000)+'k</option>';MF.push(it);});MH+='</optgroup>';});
+var MSEL='<select class="m" aria-label="Pick from menu">'+MH+'</select>';
 function addRow(n,q,p){
   var d=document.createElement('div');d.className='item';
-  d.innerHTML='<input class="n" placeholder="Item name" aria-label="Item name"><input class="q" type="number" inputmode="numeric" min="1" value="1" aria-label="Quantity"><input class="p" type="number" inputmode="numeric" min="0" placeholder="0" aria-label="Unit price"><button type="button" aria-label="Remove item">×</button>';
+  d.innerHTML=MSEL+'<input class="n" placeholder="Item name" aria-label="Item name"><input class="q" type="number" inputmode="numeric" min="1" value="1" aria-label="Quantity"><input class="p" type="number" inputmode="numeric" min="0" placeholder="0" aria-label="Unit price"><button type="button" aria-label="Remove item">×</button>';
   if(n)d.querySelector('.n').value=n;if(q)d.querySelector('.q').value=q;if(p)d.querySelector('.p').value=p;
   d.querySelector('button').onclick=function(){d.remove();draw();};
+  d.querySelector('.m').onchange=function(){var v=this.value;if(v==='')return;var it=MF[+v];d.querySelector('.n').value=it[0];d.querySelector('.p').value=it[1];draw();};
   d.addEventListener('input',draw);
   itemsEl.appendChild(d);
 }
